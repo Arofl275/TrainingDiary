@@ -1,0 +1,24 @@
+JAVAC := javac
+JAVA := java
+MKDIR := mkdir
+BUILDPATH := build
+LIBPATH := lib
+SOURCEPATH := ap.fonts/src
+
+SRC_FONTS := \
+$(wildcard ${SOURCEPATH}/ap/fonts/*.ttf)
+
+BUILD_FONTS := $(patsubst ${SOURCEPATH}%.ttf,${BUILDPATH}%.ttf,${SRC_FONTS})
+
+DIRS := $(sort $(dir ${BUILD_FONTS}))
+
+all: ${BUILD_FONTS}
+.PHONY: all clean cleanall
+
+${DIRS}:
+	${MKDIR} -p $@
+
+${BUILD_FONTS}: ${DIRS}
+	cp $(patsubst ${BUILDPATH}%.ttf,${SOURCEPATH}%.ttf,$@) $@
+
+

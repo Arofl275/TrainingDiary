@@ -1,0 +1,37 @@
+JAVAC := javac
+JAVA := java
+MKDIR := mkdir
+BUILDPATH := build
+LIBPATH := lib
+SOURCEPATH := ap.trainingdiary.images/src
+
+JARFILE := ap.trainingdiary.images.jar
+JARFILEWITHPATH := ${LIBPATH}/${JARFILE}
+
+all: ${JARFILEWITHPATH}
+.PHONY: all clean cleanall
+
+SRC_IMAGES := \
+$(wildcard ${SOURCEPATH}/ap/trainingdiary/images/*.png)
+
+BUILD_IMAGES := $(patsubst ${SOURCEPATH}%.png,${BUILDPATH}%.png,${SRC_IMAGES})
+
+DIRS := $(sort $(dir ${BUILD_IMAGES}))
+
+${DIRS}:
+	${MKDIR} -p $@
+
+${BUILD_IMAGES}: clean ${DIRS}
+	cp $(patsubst ${BUILDPATH}%.png,${SOURCEPATH}%.png,$@) $@
+
+clean:
+	rm -fr ${BUILDPATH}
+
+cleanall: clean
+	rm -fr ${JARFILEWITHPATH}
+
+${JARFILEWITHPATH}: ${LIBPATH} ${BUILD_IMAGES}
+	jar cf ${JARFILE} -C ${BUILDPATH} .
+	mv ${JARFILE} ${LIBPATH}
+
+

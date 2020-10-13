@@ -1,0 +1,45 @@
+JAVAC := javac
+JAVA := java
+MKDIR := mkdir
+BUILDPATH := build
+LIBPATH := lib
+SOURCEPATH := ap.swing/src
+CLASSPATH := ${BUILDPATH}
+
+define class_java =
+${1}: ${2} $(dir ${1})
+endef
+
+JARFILE := ap.swing.jar
+JARFILEWITHPATH := ${LIBPATH}/${JARFILE}
+
+all: ${JARFILEWITHPATH}
+.PHONY: all clean cleanall
+
+SRC_JAVA := \
+$(wildcard ${SOURCEPATH}/ap/swing/*.java)
+
+BUILD_CLASSES := $(patsubst ${SOURCEPATH}%.java,${BUILDPATH}%.class,${SRC_JAVA})
+
+DIRS := $(sort $(dir ${BUILD_CLASSES}))
+
+$(foreach class,${BUILD_CLASSES},$(eval $(call class_java,${class},$(patsubst ${BUILDPATH}%.class,${SOURCEPATH}%.java,${class}))))
+
+${DIRS}:
+	${MKDIR} -p $@
+
+${LIBPATH}:
+	${MKDIR} -p $@
+
+${BUILD_CLASSES}: clean ${DIRS}
+	${JAVAC} -Xlint:deprecation -Xlint:unchecked -d ${BUILDPATH} -cp "${CLASSPATH}:$(subst $() $(),:,${JARS})" -sourcepath ${SOURCEPATH} $(patsubst ${BUILDPATH}%.class,${SOURCEPATH}%.java,$@)
+
+clean:
+	rm -fr ${BUILDPATH}
+
+cleanall: clean
+	rm -f ${JARFILEWITHPATH}
+
+${JARFILEWITHPATH}: ${LIBPATH} ${BUILD_CLASSES}
+	jar cf ${JARFILE} -C ${BUILDPATH} .
+	mv ${JARFILE} ${LIBPATH}

@@ -1,0 +1,112 @@
+JAVAC := javac
+JAVA := java
+MKDIR := mkdir
+BUILDPATH := build
+LIBPATH := lib
+SOURCEPATH := ap.trainingdiary/src
+CLASSPATH := ${BUILDPATH}
+
+MAIN := ${BUILDPATH}/ap/trainingdiary/Main.class
+DESERIALIZERJAR := ${LIBPATH}/ap.json.deserializer.jar
+IMAGESJAR := ${LIBPATH}/ap.filefilter.jar
+FILEFILTERJAR := ${LIBPATH}/ap.trainingdiary.images.jar
+LANGUAGESJAR := ${LIBPATH}/ap.trainingdiary.languages.jar
+PROPERTYJAR := ${LIBPATH}/ap.util.property.jar
+SERIALIZERJAR := ${LIBPATH}/ap.json.serializer.jar
+SWINGJAR := ${LIBPATH}/ap.swing.jar
+PROJECTJARS := ${DESERIALIZERJAR} ${FILEFILTERJAR} ${IMAGESJAR} ${LANGUAGESJAR} ${PROPERTYJAR} ${SERIALIZERJAR} ${SWINGJAR}
+define class_java =
+${1}: ${2} $(dir ${1})
+endef
+
+
+all: ${MAIN}
+.PHONY: all clean fonts
+
+JARS := \
+$(wildcard ${LIBPATH}/commons-io*.jar) \
+$(wildcard ${LIBPATH}/fastjson-*.jar) \
+${DESERIALIZERJAR} \
+${FILEFILTERJAR} \
+${IMAGESJAR} \
+${LANGUAGESJAR} \
+${PROPERTYJAR} \
+${SERIALIZERJAR} \
+${SWINGJAR} \
+${LIBPATH}/org.jdatepicker.jar \
+${LIBPATH}/org.jdatepicker-resources.jar \
+${LIBPATH}/barcodes-7.1.12.jar  \
+${LIBPATH}/font-asian-7.1.12.jar  \
+${LIBPATH}/forms-7.1.12.jar  \
+${LIBPATH}/hyph-7.1.12.jar  \
+${LIBPATH}/io-7.1.12.jar  \
+${LIBPATH}/kernel-7.1.12.jar  \
+${LIBPATH}/layout-7.1.12.jar  \
+${LIBPATH}/pdfa-7.1.12.jar  \
+${LIBPATH}/pdftest-7.1.12.jar  \
+${LIBPATH}/sign-7.1.12.jar  \
+${LIBPATH}/styled-xml-parser-7.1.12.jar  \
+${LIBPATH}/svg-7.1.12.jar \
+${LIBPATH}/slf4j-api-2.0.0-alpha1.jar \
+${LIBPATH}/slf4j-nop-2.0.0-alpha1.jar
+
+SRC_JAVA_ALL := \
+$(wildcard ${SOURCEPATH}/*.java) \
+$(wildcard ${SOURCEPATH}/*/*.java) \
+$(wildcard ${SOURCEPATH}/*/*/*.java) \
+$(wildcard ${SOURCEPATH}/*/*/*/*.java) \
+$(wildcard ${SOURCEPATH}/*/*/*/*/*.java) \
+$(wildcard ${SOURCEPATH}/*/*/*/*/*/*.java) \
+$(wildcard ${SOURCEPATH}/*/*/*/*/*/*/*.java) \
+$(wildcard ${SOURCEPATH}/*/*/*/*/*/*/*/*.java) \
+$(wildcard ${SOURCEPATH}/*/*/*/*/*/*/*/*/*.java) \
+$(wildcard ${SOURCEPATH}/*/*/*/*/*/*/*/*/*/*.java) \
+$(wildcard ${SOURCEPATH}/*/*/*/*/*/*/*/*/*/*/*.java)
+
+BUILD_CLASSES_ALL := $(patsubst ${SOURCEPATH}%.java,${BUILDPATH}%.class,${SRC_JAVA})
+
+BUILD_CLASSES := $(filter-out ${MAIN},${BUILD_CLASSES_ALL})
+
+DIRS := $(sort $(dir ${BUILD_CLASSES_AND_PROGRAM}))
+
+$(foreach class,${BUILD_CLASSES_AND_PROGRAM},$(eval $(call class_java,${class},$(patsubst ${BUILDPATH}%.class,${SOURCEPATH}%.java,${class}))))
+
+fonts:
+	make -f makefile.ap.fonts
+
+${DESERIALIZERJAR}:
+	make -f makefile.ap.json.deserializer
+
+${FILEFILTERJAR}:
+	make -f makefile.ap.filefilter
+
+${IMAGESJAR}:
+	make -f makefile.ap.trainingdiary.images
+
+${LANGUAGESJAR}:
+	make -f makefile.ap.trainingdiary.languages
+
+${PROPERTYJAR}:
+	make -f makefile.ap.util.property
+
+${SERIALIZERJAR}:
+	make -f makefile.ap.json.serializer
+
+${SWINGJAR}:
+	make -f makefile.ap.json.serializer
+
+${DIRS}:
+	${MKDIR} -p $@
+
+${BUILD_CLASSES}: ${PROJECTJARS} clean ${DIRS}
+	${JAVAC} -Xlint:deprecation -Xlint:unchecked -d ${BUILDPATH} -cp "${CLASSPATH}:$(subst $() $(),:,${JARS})" -sourcepath ${SOURCEPATH} $(patsubst ${BUILDPATH}%.class,${SOURCEPATH}%.java,$@)
+
+${MAIN}: ${BUILD_CLASSES} fonts
+	${JAVAC} -Xlint:deprecation -Xlint:unchecked -d ${BUILDPATH} -cp "${CLASSPATH}:$(subst $() $(),:,${JARS})" -sourcepath ${SOURCEPATH} $(patsubst ${BUILDPATH}%.class,${SOURCEPATH}%.java,$@)
+
+clean:
+	rm -fr ${BUILDPATH}
+
+start: ${MAIN}
+	cd ${BUILDPATH};java -cp ".:$(subst $() $(),:,$(foreach jar,${JARS},$(patsubst %.jar,../%.jar,${jar})))" ap.trainingdiary.Main
+
