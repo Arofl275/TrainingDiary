@@ -1,0 +1,38 @@
+This project depends on other projects and files from these projects:
+
+Sources:
+
+1) Fastjson (https://github.com/alibaba/fastjson)
+Files:
+	fastjson-1.2.62.jar
+
+2) itextpdef (https://github.com/itext/itext7)
+Files:
+	barcodes-7.1.12.jar
+	font-asian-7.1.12.jar
+	forms-7.1.12.jar
+	hyph-7.1.12.jar
+	io-7.1.12.jar
+	kernel-7.1.12.jar
+	layout-7.1.12.jar
+	pdfa-7.1.12.jar
+	pdftest-7.1.12.jar
+	sign-7.1.12.jar
+	styled-xml-parser-7.1.12.jar
+	svg-7.1.12.jar
+	
+3) Commons IO (https://commons.apache.org/proper/commons-io/)
+Files:
+	commons-io-2.6.jar
+
+4) JDatePicker (https://github.com/JDatePicker/JDatePicker)
+Files:
+	org.jdatepicker.jar
+	org.jdatepicker-resources.jar
+
+5) slf4j (http://www.slf4j.org/)
+Files:
+	slf4j-api-2.0.0-alpha1.jar
+	slf4j-nop-2.0.0-alpha1.jar
+
+If you use this project, then keep in mind that all sources have their own license.
