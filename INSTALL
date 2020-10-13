@@ -1,0 +1,5 @@
+To compile project execute in project folder the command:
+	make -f makefile.ap.trainingdiary
+
+To start program  execute in project folder the command:
+	make -f makefile.ap.trainingdiary start
